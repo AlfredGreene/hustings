@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]><html class="no-js lt-ie9 lt-ie8 lt-ie7"><![endif]-->
+<!--[if IE 7]><html class="no-js lt-ie9 lt-ie8"><![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9"><![endif]-->
+<!--[if gt IE 8]><!--><html class="no-js"><!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>LA1:TV Websocket Test</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+
+        <link rel="stylesheet" href="./css/normalize.min.css">
+        <link rel="stylesheet" href="./css/main.css">
+        <link rel="stylesheet" href="./css/ross.css">
+
+        <script src="./js/vendor/modernizr-2.6.2-respond-1.1.0.min.js"></script>
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+        <![endif]-->
+
+        <div class="header-container">
+            <header class="wrapper clearfix">
+                <h1 class="title">LA1:TV Hustings</h1>
+            </header>
+        </div>
+
+        <div class="main-container" id="sockets">
+            <div class="main wrapper clearfix">
+
+                <article>
+                    <header>
+                        <h2 id="candidate_name">Unknown Candidate</h2>
+                        <p id="candidate_position">Unknown Position</p>
+                    </header>
+                    <section>
+                        <button id="up_button" class="styled-button-8">Agree</button>
+                        <button id="down_button" class="styled-button-8">Disagree</button>
+                    </section>
+                    <section>
+                        <p id="vote_count">Vote count unknown</p>
+                    </section>
+                    <section>
+                        <div id="container" style="width: 100%; height: 300px; margin: 0 auto"></div>
+                    </section>      
+                </article>
+
+            </div> <!-- #main -->
+        </div> <!-- #main-container -->
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+        <script src="http://cdn.sockjs.org/sockjs-0.3.min.js"></script>
+        <script src="https://raw.github.com/aanand/jquery.tappable.js/master/jquery.tappable.js"></script>
+        
+        <script src="http://code.highcharts.com/highcharts.js"></script>
+        <script src="http://code.highcharts.com/highcharts-more.js"></script>
+
+        <script>window.jQuery || document.write('<script src="js/vendor/jquery-1.8.3.min.js"><\/script>')</script>
+
+        <script src="js/main.js"></script>
+
+        <script>
+            var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview']];
+            (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+            g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+            s.parentNode.insertBefore(g,s)}(document,'script'));
+        </script>
+        
+       <script type="text/javascript">
+
+            var currentVote = 0;
+
+            var chart;
+
+            $(function () {
+                
+                chart = new Highcharts.Chart({
+                
+                    chart: {
+                        renderTo: 'container',
+                        type: 'gauge',
+                        plotBackgroundColor: null,
+                        plotBackgroundImage: null,
+                        plotBorderWidth: 0,
+                        plotShadow: false
+                    },
+                    
+                    title: {
+                        text: 'Vote Swing'
+                    },
+                    
+                    pane: {
+                        startAngle: -150,
+                        endAngle: 150,
+                        background: [{
+                            backgroundColor: {
+                                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                                stops: [
+                                    [0, '#FFF'],
+                                    [1, '#333']
+                                ]
+                            },
+                            borderWidth: 0,
+                            outerRadius: '109%'
+                        }, {
+                            backgroundColor: {
+                                linearGradient: { x1: 0, y1: 0, x2: 0, y2: 1 },
+                                stops: [
+                                    [0, '#333'],
+                                    [1, '#FFF']
+                                ]
+                            },
+                            borderWidth: 1,
+                            outerRadius: '107%'
+                        }, {
+                            // default background
+                        }, {
+                            backgroundColor: '#DDD',
+                            borderWidth: 0,
+                            outerRadius: '105%',
+                            innerRadius: '103%'
+                        }]
+                    },
+                       
+                    // the value axis
+                    yAxis: {
+                        min: -100,
+                        max: 100,
+                        
+                        minorTickInterval: 'auto',
+                        minorTickWidth: 1,
+                        minorTickLength: 10,
+                        minorTickPosition: 'inside',
+                        minorTickColor: '#666',
+                
+                        tickPixelInterval: 30,
+                        tickWidth: 2,
+                        tickPosition: 'inside',
+                        tickLength: 10,
+                        tickColor: '#666',
+                        labels: {
+                            step: 2,
+                            rotation: 'auto'
+                        },
+                        title: {
+                            text: ''
+                        },
+                        plotBands: [{
+                            from: -100,
+                            to: 0,
+                            color: '#55BF3B' // green
+                        }, {
+                            from: 0,
+                            to: 100,
+                            color: '#DF5353' // red
+                        }]        
+                    },
+                
+                    series: [{
+                        name: 'Vote Swing',
+                        data: [0]
+                    }]
+                
+                }, 
+                // Add some life
+                function (chart) {
+
+                    setInterval(function () {
+                        var point = chart.series[0].points[0],
+                            newVal,
+                            inc = Math.round((Math.random() - 0.5) * 20);
+                        
+                        newVal = point.y + inc;
+                        if (newVal < 0 || newVal > 200) {
+                            newVal = point.y - inc;
+                        }
+                        
+                        point.update(newVal);
+                        
+                    }, 3000);
+
+                });
+            });
+
+        </script>
+
+        <script>
+            var sockjs_url = '/echo';
+            var sockjs = new SockJS(sockjs_url);
+            var div = $('#socket_box');
+
+            var print = function(m, p) {
+                p = (p === undefined) ? '' : JSON.stringify(p);
+                console.log(m + ' ' + p);
+            };
+
+            sockjs.onopen = function() {
+                print('[+] New Connection using ', sockjs.protocol);
+            };
+        
+            sockjs.onmessage = function(e) {
+                var split = e.data.split(":");
+                if(split[0] == "CLIENTS_COUNT") {
+                    $('#connected_clients').text("Connected Clients: " + split[1]);
+                } else if(split[0] == "CANDIDATE_CHANGE") {
+                    $('#candidate_name').text("Candidate: " + split[1]);
+                    $('#candidate_position').text("Position: " + split[2]);
+                } else if(split[0] == "VOTE_VALUE_UPDATE") {
+                    $('#vote_count').text("Vote total: " + split[1])
+                    //var point = chart.series[0].points[0];
+                    //point.update(split[1]);
+                } else {
+                    print('[*] Received Message', e.data);
+                }
+            };
+         
+            sockjs.onclose = function() {
+                print('[-] Closed Connection');
+                $('#connected_clients').text("Connection Lost");
+            };
+
+            jQuery('#up_button').tappable(function() {
+                print('[?] Sending UP vote');
+                sockjs.send("UP");
+            });
+            
+            jQuery('#down_button').tappable(function() {
+                print('[?] Sending DOWN vote');
+                sockjs.send("DOWN");
+            });
+        </script>
+
+        <script>
+
+        // When ready...
+        window.addEventListener("load",function() {
+          // Set a timeout...
+          setTimeout(function(){
+            // Hide the address bar!
+            window.scrollTo(0, 1);
+          }, 0);
+        });
+
+        </script>
+
+    </body>
+
+</html>

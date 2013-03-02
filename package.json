@@ -1,0 +1,9 @@
+{
+        "name": "la1tv-yeyney",
+        "version": "0.0.0-unreleasable",
+        "dependencies": {
+                "express": "*",
+                "sockjs": "*",
+                "colors": "*"
+        }
+}
