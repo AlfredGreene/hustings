@@ -86,6 +86,10 @@ sockjs_server.on('connection', function(conn) {
                 }
             }
 
+            if(split[1] == "RESET_VOTE") {
+               console.log("Received RESET_VOTE command");
+               voteValue = 0;
+            }
         }
     });
 
