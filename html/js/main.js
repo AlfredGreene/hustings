@@ -160,7 +160,12 @@ sockjs.onmessage = function(e) {
 
 sockjs.onclose = function() {
     console.log('Closed connection');
-    //$('#connected_clients').text("Connection Lost");
+ /*   $('#candidate_name').text("Lost Connection"));
+    $('#candidate_position').text("Please refresh your browser page");
+	$('#candidate_info').show();
+	$('#no_candidate').hide();
+	$('#up_button').attr('disabled','disabled');
+	$('#down_button').attr('disabled','disabled');*/
 };
 
 jQuery('#up_button').tappable(function() {

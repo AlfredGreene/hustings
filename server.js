@@ -10,6 +10,8 @@ var broadcast = {};
 
 var voteValue = 0;
 
+var votingStatus = false;
+
 var sockjs_server = sockjs.createServer(config.server_opts);
 
 Object.size = function(obj) {
@@ -27,7 +29,13 @@ sockjs_server.on('connection', function(conn) {
 
     // Log this connected client
     console.log(('[+] New client connected ' + conn.remoteAddress + ":" + conn.remotePort).green);
-        
+    
+    if(votingStatus) {
+        conn.write("ENABLE_VOTING");        
+    } else {
+        conn.write("DISABLE_VOTING");                
+    }
+
     conn.on('close', function() {
         delete broadcast[conn.id];
         
@@ -64,6 +72,7 @@ sockjs_server.on('connection', function(conn) {
 
             if(split[1] == "DISABLE_VOTING") { 
                 console.log("Received DISABLE_VOTING command");
+                votingStatus = false;
                 for(var id in broadcast) {
                     broadcast[id].write("DISABLE_VOTING");
                 }
@@ -71,6 +80,7 @@ sockjs_server.on('connection', function(conn) {
 
             if(split[1] == "ENABLE_VOTING") {
                console.log("Received ENABLE_VOTING command");
+               votingStatus = true;
                 for(var id in broadcast) {
                     broadcast[id].write("ENABLE_VOTING");
                 }
