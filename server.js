@@ -118,4 +118,4 @@ console.log('LA1:TV Hustings WebSocket Server');
 console.log('Listening on 0.0.0.0:9999 (nginx proxying hustings.la1tv.co.uk:80)');
 
 sockjs_server.installHandlers(server, {prefix:'/votes'});
-server.listen(9999);
+server.listen(80);
