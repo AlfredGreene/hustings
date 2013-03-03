@@ -1,4 +1,4 @@
-#candidate_name, #candidate_position {
+#candidate_info, #no_candidate {
 	text-align: center;
 }
 
@@ -22,9 +22,22 @@
 }
 
 button#up_button, button#down_button {
-        width: 100%;
-        margin-bottom: 10px;
-        height: 60px;
-        font-size: 28px;
-        font-weight: bold;
-    }
+	width: 49%;
+	margin-bottom: 15px;
+	padding: 0.5em;
+	font-size: 1.2em;
+	font-weight: bold;
+}
+
+#down_button[disabled=disabled], #up_button[disabled=disabled] {
+	background-color: #737373;
+	background-image: -webkit-gradient(radial, 50% 0%,0,50% 0%,200, from(rgb(76, 76, 76)), to(rgb(115, 115, 115)));
+	background-image: -webkit-radial-gradient(50% 0%, rgb(115, 115, 115), rgb(76, 76, 76));
+	background-image: -moz-radial-gradient(50% 0%, rgb(115, 115, 115), rgb(76, 76, 76));
+	background-image: -o-radial-gradient(50% 0%, rgb(115, 115, 115), rgb(76, 76, 76));
+	background-image: -ms-radial-gradient(50% 0%, rgb(115, 115, 115), rgb(76, 76, 76));
+	background-image: radial-gradient(50% 0%, rgb(115, 115, 115), rgb(76, 76, 76));
+	cursor: none;
+	border: 1px solid grey;
+	color: #bbb;
+}
