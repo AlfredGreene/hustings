@@ -39,7 +39,7 @@ sockjs_server.on('connection', function(conn) {
         conn.write("DISABLE_VOTING");                
     }
 
-    write("CANDIDATE_CHANGE:" + currentCandidate + ":" + split[3]);
+    conn.write("CANDIDATE_CHANGE:" + currentCandidate + ":" + split[3]);
 
     conn.on('close', function() {
         delete broadcast[conn.id];
