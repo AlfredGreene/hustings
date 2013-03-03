@@ -94,7 +94,7 @@ sockjs_server.on('connection', function(conn) {
         if(voteValue > 0) {
             voteValue--;
         }
-    }, 4000);
+    }, 8000);
 });
 
 // Create the express server for serving static content
