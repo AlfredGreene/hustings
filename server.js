@@ -61,7 +61,6 @@ sockjs_server.on('connection', function(conn) {
     });
 
     setInterval(function(){
-        console.log("Sending voteValue update to all clients");
         for(var id in broadcast) {
             broadcast[id].write("VOTE_VALUE_UPDATE:" + voteValue);
         }
@@ -79,5 +78,14 @@ var server = http.createServer(app);
 console.log('LA1:TV WebSocket Server');
 console.log('Listening on 0.0.0.0:9999');
 
+process.on('message', function(message) {
+  if (message === 'shutdown') {
+    console.log("Shutdown message received");
+    process.exit(0);
+  }
+});
+
 sockjs_server.installHandlers(server, {prefix:'/echo'});
-server.listen(9999);
+server.listen(9999, function() {
+    process.send('online');
+});

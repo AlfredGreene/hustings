@@ -4,6 +4,7 @@
         "dependencies": {
                 "express": "*",
                 "sockjs": "*",
-                "colors": "*"
+                "colors": "*",
+                "naught": "*"
         }
 }
