@@ -10,6 +10,9 @@ var broadcast = {};
 
 var voteValue = 0;
 
+var currentCandidate = "Unknown Candidate";
+var currentPosition = "Unknown Position";
+
 var votingStatus = false;
 
 var sockjs_server = sockjs.createServer(config.server_opts);
@@ -35,6 +38,8 @@ sockjs_server.on('connection', function(conn) {
     } else {
         conn.write("DISABLE_VOTING");                
     }
+
+    write("CANDIDATE_CHANGE:" + currentCandidate + ":" + split[3]);
 
     conn.on('close', function() {
         delete broadcast[conn.id];
@@ -65,6 +70,8 @@ sockjs_server.on('connection', function(conn) {
 
             if(split[1] == "CANDIDATE_CHANGE") {
                 console.log("Received CANDIDATE_CHANGE command for " + split[2] + ":" + split[3]);
+                currentCandidate = split[2];
+                currentPosition = split[3];
                 for(var id in broadcast) {
                     broadcast[id].write("CANDIDATE_CHANGE:" + split[2] + ":" + split[3]);
                 }
@@ -97,7 +104,7 @@ sockjs_server.on('connection', function(conn) {
         for(var id in broadcast) {
             broadcast[id].write("VOTE_VALUE_UPDATE:" + voteValue);
         }
-    }, 1500);
+    }, 5000);
 
 
     setInterval(function(){
@@ -108,7 +115,7 @@ sockjs_server.on('connection', function(conn) {
         if(voteValue > 0) {
             voteValue--;
         }
-    }, 8000);
+    }, 20000);
 });
 
 // Create the express server for serving static content
